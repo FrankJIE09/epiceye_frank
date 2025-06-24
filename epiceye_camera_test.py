@@ -66,11 +66,10 @@ class EpicEyeCameraTester:
         
         # 测试参数
         self.test_params = {
-            'frame_rate_test_duration': 10,  # 帧率测试持续时间（秒）
-            'repeatability_test_count': 50,  # 重复精度测试次数
-            'stability_test_duration': 60,   # 稳定性测试持续时间（秒）
-            'accuracy_test_distance': 1000,  # 精度测试距离（mm）
-            'noise_test_count': 100,         # 噪声测试次数
+            'frame_rate_test_duration': 500,   # 帧率测试持续时间（减少到5秒）
+            'repeatability_test_count': 500,   # 重复精度测试次数（减少到5次）
+            'stability_test_duration': 1000,   # 稳定性测试持续时间（减少到10秒）
+            'noise_test_count': 500,           # 噪声测试次数（减少到5次）
         }
     
     def setup_camera(self) -> bool:
@@ -193,35 +192,33 @@ class EpicEyeCameraTester:
         while time.time() < end_time:
             frame_start = time.time()
             
-            # 触发拍摄
-            frame_id = self.camera.capture_frame(pointcloud=True)  # 不包含点云以提高速度
+            # 触发拍摄（包含点云）
+            frame_id = self.camera.capture_frame(pointcloud=True)
             
             if frame_id:
                 frame_end = time.time()
                 frame_times.append(frame_end - frame_start)
                 frame_ids.append(frame_id)
                 success_count += 1
-                time.sleep(0.5)
+                time.sleep(0.5)  # 等待0.5秒防止拍摄失败
             else:
                 self.logger.warning("拍摄失败")
             
             total_count += 1
         
-        # 计算统计信息
+        # 计算帧率
         if frame_times:
-            frame_times = np.array(frame_times)
-            fps = len(frame_times) / duration
             avg_frame_time = np.mean(frame_times)
             std_frame_time = np.std(frame_times)
             min_frame_time = np.min(frame_times)
             max_frame_time = np.max(frame_times)
             
-            # 计算实际帧率（去除异常值）
-            frame_times_filtered = frame_times[frame_times < np.percentile(frame_times, 95)]
-            fps_filtered = len(frame_times_filtered) / duration
-            
+            # 计算实际帧率
+            fps = success_count / duration
+            fps_filtered = 1.0 / avg_frame_time if avg_frame_time > 0 else 0
         else:
-            fps = fps_filtered = avg_frame_time = std_frame_time = min_frame_time = max_frame_time = 0
+            avg_frame_time = std_frame_time = min_frame_time = max_frame_time = 0
+            fps = fps_filtered = 0
         
         return {
             'duration': duration,
@@ -234,7 +231,8 @@ class EpicEyeCameraTester:
             'std_frame_time': std_frame_time,
             'min_frame_time': min_frame_time,
             'max_frame_time': max_frame_time,
-            'frame_times': frame_times[:100]  # 只保存前100个时间用于分析
+            'frame_times': frame_times,
+            'frame_ids': frame_ids
         }
     
     def test_repeatability(self) -> Dict:
@@ -242,6 +240,7 @@ class EpicEyeCameraTester:
         count = self.test_params['repeatability_test_count']
         point_clouds = []
         center_points = []
+        selected_points = []  # 存储选择的20个点
         success_count = 0
         
         self.logger.info(f"开始重复精度测试，测试次数: {count}")
@@ -261,9 +260,21 @@ class EpicEyeCameraTester:
                     center = np.mean(valid_points, axis=0)
                     center_points.append(center)
                     point_clouds.append(pointcloud)
+                    
+                    # 选择20个均匀分布的点进行分析
+                    if len(valid_points) >= 20:
+                        # 随机选择20个点
+                        indices = np.linspace(0, len(valid_points)-1, 20, dtype=int)
+                        selected_pts = valid_points[indices]
+                        selected_points.append(selected_pts)
+                    else:
+                        # 如果点数不足20个，使用所有点
+                        selected_points.append(valid_points)
+                    
                     success_count += 1
                 
                 self.logger.debug(f"重复精度测试进度: {i+1}/{count}")
+                time.sleep(0.5)  # 等待0.5秒防止拍摄失败
             else:
                 self.logger.warning(f"第{i+1}次拍摄失败")
         
@@ -271,11 +282,27 @@ class EpicEyeCameraTester:
             return {'error': '有效数据不足，无法计算重复精度'}
         
         center_points = np.array(center_points)
+        selected_points = np.array(selected_points)
         
-        # 计算重复精度统计
+        # 计算重复精度统计（中心点）
         mean_center = np.mean(center_points, axis=0)
         std_center = np.std(center_points, axis=0)
         max_deviation = np.max(np.linalg.norm(center_points - mean_center, axis=1))
+        
+        # 计算选择点的重复精度
+        if len(selected_points) > 0:
+            # 计算每个选择点的重复精度
+            point_precisions = []
+            for point_idx in range(min(20, selected_points.shape[1])):
+                point_series = selected_points[:, point_idx, :]
+                point_std = np.std(point_series, axis=0)
+                point_precisions.append(point_std)
+            
+            point_precisions = np.array(point_precisions)
+            mean_point_precision = np.mean(point_precisions, axis=0)
+            std_point_precision = np.std(point_precisions, axis=0)
+        else:
+            mean_point_precision = std_point_precision = np.array([0, 0, 0])
         
         # 计算点云密度变化
         densities = []
@@ -297,7 +324,12 @@ class EpicEyeCameraTester:
             'mean_density': np.mean(densities),
             'std_density': np.std(densities),
             'center_points': center_points.tolist(),
-            'densities': densities.tolist()
+            'densities': densities.tolist(),
+            'selected_points_precision': {
+                'mean_precision': mean_point_precision.tolist(),
+                'std_precision': std_point_precision.tolist(),
+                'point_count': min(20, selected_points.shape[1]) if len(selected_points) > 0 else 0
+            }
         }
     
     def test_stability(self) -> Dict:
@@ -330,6 +362,9 @@ class EpicEyeCameraTester:
                     measurement['point_cloud_stats'] = stats
                 
                 measurements.append(measurement)
+                time.sleep(0.5)  # 等待0.5秒防止拍摄失败
+            else:
+                self.logger.warning("稳定性测试拍摄失败")
             
             # 等待到下一个间隔
             elapsed = time.time() - test_start
@@ -376,11 +411,14 @@ class EpicEyeCameraTester:
         self.logger.info(f"开始噪声测试，测试次数: {count}")
         
         for i in range(count):
-            data = self.camera.capture_and_get_all(pointcloud=False)
+            data = self.camera.capture_and_get_all()  # 包含点云获取
             
             if data['success'] and data['depth'] is not None:
                 depth_maps.append(data['depth'])
                 success_count += 1
+                time.sleep(0.5)  # 等待0.5秒防止拍摄失败
+            else:
+                self.logger.warning(f"第{i+1}次噪声测试拍摄失败")
             
             if (i + 1) % 10 == 0:
                 self.logger.debug(f"噪声测试进度: {i+1}/{count}")
@@ -418,8 +456,9 @@ class EpicEyeCameraTester:
     def test_accuracy(self) -> Dict:
         """精度测试（需要标准目标）"""
         # 这个测试需要标准目标，这里提供一个基础框架
-        test_count = 10
+        test_count = 5  # 减少到5次测试
         measurements = []
+        selected_points_series = []  # 存储每次测试选择的20个点
         
         self.logger.info("开始精度测试")
         
@@ -432,25 +471,64 @@ class EpicEyeCameraTester:
                 # 这里应该添加标准目标的检测和测量
                 # 例如：检测棋盘格角点、测量已知距离等
                 
-                # 临时使用点云中心作为测量点
+                # 获取有效点云
                 valid_points = pointcloud[~np.isnan(pointcloud).any(axis=2)]
                 valid_points = valid_points[~np.isinf(valid_points).any(axis=1)]
                 
                 if len(valid_points) > 0:
+                    # 计算中心点
                     center = np.mean(valid_points, axis=0)
                     measurements.append(center)
+                    
+                    # 选择20个点进行分析
+                    if len(valid_points) >= 20:
+                        # 均匀选择20个点
+                        indices = np.linspace(0, len(valid_points)-1, 20, dtype=int)
+                        selected_pts = valid_points[indices]
+                        selected_points_series.append(selected_pts)
+                    else:
+                        # 如果点数不足20个，使用所有点
+                        selected_points_series.append(valid_points)
+                
+                time.sleep(0.5)  # 等待0.5秒防止拍摄失败
+            else:
+                self.logger.warning(f"第{i+1}次精度测试拍摄失败")
         
         if len(measurements) < 2:
             return {'error': '有效测量数据不足'}
         
         measurements = np.array(measurements)
+        selected_points_series = np.array(selected_points_series)
+        
+        # 计算中心点精度
+        mean_measurement = np.mean(measurements, axis=0)
+        std_measurement = np.std(measurements, axis=0)
+        
+        # 计算选择点的精度
+        if len(selected_points_series) > 0:
+            point_accuracies = []
+            for point_idx in range(min(20, selected_points_series.shape[1])):
+                point_series = selected_points_series[:, point_idx, :]
+                point_std = np.std(point_series, axis=0)
+                point_accuracies.append(point_std)
+            
+            point_accuracies = np.array(point_accuracies)
+            mean_point_accuracy = np.mean(point_accuracies, axis=0)
+            std_point_accuracy = np.std(point_accuracies, axis=0)
+        else:
+            mean_point_accuracy = std_point_accuracy = np.array([0, 0, 0])
         
         return {
             'test_count': test_count,
             'measurement_count': len(measurements),
             'measurements': measurements.tolist(),
-            'mean_measurement': np.mean(measurements, axis=0).tolist(),
-            'std_measurement': np.std(measurements, axis=0).tolist(),
+            'mean_measurement': mean_measurement.tolist(),
+            'std_measurement': std_measurement.tolist(),
+            'selected_points_accuracy': {
+                'mean_accuracy': mean_point_accuracy.tolist(),
+                'std_accuracy': std_point_accuracy.tolist(),
+                'point_count': min(20, selected_points_series.shape[1]) if len(selected_points_series) > 0 else 0
+            },
             'note': '需要标准目标进行更精确的精度测试'
         }
     
