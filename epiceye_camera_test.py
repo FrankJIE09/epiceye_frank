@@ -194,13 +194,14 @@ class EpicEyeCameraTester:
             frame_start = time.time()
             
             # 触发拍摄
-            frame_id = self.camera.capture_frame(pointcloud=False)  # 不包含点云以提高速度
+            frame_id = self.camera.capture_frame(pointcloud=True)  # 不包含点云以提高速度
             
             if frame_id:
                 frame_end = time.time()
                 frame_times.append(frame_end - frame_start)
                 frame_ids.append(frame_id)
                 success_count += 1
+                time.sleep(0.5)
             else:
                 self.logger.warning("拍摄失败")
             

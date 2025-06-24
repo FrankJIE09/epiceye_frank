@@ -1,4 +1,5 @@
 import json
+import time
 
 import open3d as o3d
 import epiceye
@@ -59,39 +60,42 @@ def epiceye_example(ip: str):
     logger.info(f"distortion   : {distortion}")
 
     logger.info(divider("trigger frame"))
-    frame_id = epiceye.trigger_frame(ip=ip, pointcloud=True)
-    logger.info(f"frame_id: {frame_id}")
 
-    logger.info(divider("get image"))
-    image = epiceye.get_image(ip=ip, frame_id=frame_id)
-    if image is not None:
-        # convert 10bit raw image to 8bit for display
-        image = cv2.convertScaleAbs(image, alpha=(255.0 / 1024.0))
-        cv2.imwrite("image.png", image)
-        logger.info("Image saved to image.png")
-    else:
-        logger.info("image is None")
+    for i in range(10):
+        frame_id = epiceye.trigger_frame(ip=ip, pointcloud=True)
+        logger.info(f"frame_id: {frame_id}")
 
-    logger.info(divider("get pointcloud"))
-    pointcloud = epiceye.get_point_cloud(ip=ip, frame_id=frame_id)
-    if pointcloud is not None:
-        pcd_data = o3d.geometry.PointCloud()
-        points = pointcloud.reshape(-1, 3)
-        pcd_data.points = o3d.utility.Vector3dVector(points)
-        o3d.io.write_point_cloud("cloud.ply", pcd_data)
-        logger.info("Pointcloud saved to cloud.ply")
-    else:
-        logger.info("pointcloud is None")
+        logger.info(divider("get image"))
+        image = epiceye.get_image(ip=ip, frame_id=frame_id)
+        if image is not None:
+            # convert 10bit raw image to 8bit for display
+            image = cv2.convertScaleAbs(image, alpha=(255.0 / 1024.0))
+            cv2.imwrite("image.png", image)
+            logger.info("Image saved to image.png")
+        else:
+            logger.info("image is None")
 
-    logger.info(divider("get depth"))
-    depth = epiceye.get_depth(ip=ip, frame_id=frame_id)
-    if depth is not None:
-        pseudo_color = cv2.applyColorMap(
-            (depth / 10.0).astype("uint8"), cv2.COLORMAP_JET)
-        cv2.imwrite("depth.png", pseudo_color)
-        logger.info("Pseudo color map of depth image saved to depth.png")
-    else:
-        logger.info("depth is None")
+        logger.info(divider("get pointcloud"))
+        pointcloud = epiceye.get_point_cloud(ip=ip, frame_id=frame_id)
+        if pointcloud is not None:
+            pcd_data = o3d.geometry.PointCloud()
+            points = pointcloud.reshape(-1, 3)
+            pcd_data.points = o3d.utility.Vector3dVector(points)
+            o3d.io.write_point_cloud(f"cloud_{i}.ply", pcd_data)
+            logger.info(f"Pointcloud saved to cloud_{i}.ply")
+        else:
+            logger.info("pointcloud is None")
+
+        logger.info(divider("get depth"))
+        depth = epiceye.get_depth(ip=ip, frame_id=frame_id)
+        if depth is not None:
+            pseudo_color = cv2.applyColorMap(
+                (depth / 10.0).astype("uint8"), cv2.COLORMAP_JET)
+            cv2.imwrite("depth.png", pseudo_color)
+            logger.info("Pseudo color map of depth image saved to depth.png")
+        else:
+            logger.info("depth is None")
+        time.sleep(1)
 
 
 if __name__ == '__main__':
