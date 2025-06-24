@@ -1,0 +1,415 @@
+{
+  "test_timestamp": 1750733864.4701564,
+  "camera_ip": "192.168.188.66:5000",
+  "test_params": {
+    "frame_rate_test_duration": 5,
+    "repeatability_test_count": 5,
+    "stability_test_duration": 10,
+    "noise_test_count": 5
+  },
+  "results": [
+    {
+      "test_name": "基础功能测试",
+      "success": true,
+      "execution_time": 1.3696978092193604,
+      "error_message": null,
+      "data": {
+        "camera_info": {
+          "sn": "PM005801004",
+          "ip": "192.168.188.66:5000",
+          "model": "EpicEye Pixel Mini",
+          "alias": "PixelSerial",
+          "width": 1600,
+          "height": 1000
+        },
+        "camera_config": {
+          "exposure_time": null,
+          "gain": null,
+          "laser_power": null,
+          "laser_mode": null,
+          "filter_mode": null,
+          "point_cloud_mode": null
+        },
+        "camera_matrix": [
+          1719.1751393739855,
+          0.0,
+          804.9411028858143,
+          0.0,
+          1719.5479897266177,
+          515.7542591716895,
+          0.0,
+          0.0,
+          1.0
+        ],
+        "distortion": [
+          -0.06569737345554334,
+          0.05724619008026922,
+          0.00016392425220604785,
+          0.00044790163330962296,
+          0.06132159627264493
+        ],
+        "single_capture": {
+          "frame_id": "26507_56b3b115-3fad-48a4-8313-bc4b2675c1e1",
+          "has_image": true,
+          "has_pointcloud": true,
+          "has_depth": true
+        },
+        "point_cloud_stats": {
+          "total_points": 1600000,
+          "valid_points": 565909,
+          "valid_ratio": 0.353693125,
+          "mean_distance": 479.9853515625,
+          "std_distance": 134.55563354492188,
+          "min_distance": 351.66314697265625,
+          "max_distance": 976.1181030273438,
+          "mean_x": 82.99116516113281,
+          "mean_y": -32.047115325927734,
+          "mean_z": 455.0447998046875,
+          "std_x": 108.49597930908203,
+          "std_y": 69.04656982421875,
+          "std_z": 130.27626037597656
+        }
+      }
+    },
+    {
+      "test_name": "帧率测试",
+      "success": true,
+      "execution_time": 5.116312026977539,
+      "error_message": null,
+      "data": {
+        "duration": 5,
+        "total_attempts": 8,
+        "successful_captures": 8,
+        "success_rate": 1.0,
+        "fps": 1.6,
+        "fps_filtered": 7.19717813505099,
+        "avg_frame_time": 0.13894334435462952,
+        "std_frame_time": 0.04766292666261417,
+        "min_frame_time": 0.022929906845092773,
+        "max_frame_time": 0.18579363822937012,
+        "frame_times": [
+          0.022929906845092773,
+          0.1667344570159912,
+          0.159820556640625,
+          0.18579363822937012,
+          0.11700630187988281,
+          0.1507422924041748,
+          0.16479849815368652,
+          0.1437211036682129
+        ],
+        "frame_ids": [
+          "26508_dd8c4505-3f1a-4659-8ecf-7eb81bcade8e",
+          "26509_45c489f1-dbb3-4c04-be76-0a90386560f1",
+          "26510_c95105d9-e410-4c91-8dbc-2f76dc435140",
+          "26511_ef4e0876-bf97-4639-a654-630c573ea9f8",
+          "26512_ad3c34bb-cf51-4f01-9dae-fa549048ba1f",
+          "26513_649dd314-3797-4565-a8f0-94343081d166",
+          "26514_f8012198-5eb7-4cb0-bfec-e7e0ee747234",
+          "26515_9ead17a0-f601-4e5c-8532-7746e383c3a8"
+        ]
+      }
+    },
+    {
+      "test_name": "重复精度测试",
+      "success": true,
+      "execution_time": 8.677250623703003,
+      "error_message": null,
+      "data": {
+        "test_count": 5,
+        "success_count": 5,
+        "success_rate": 1.0,
+        "mean_center": [
+          83.10506439208984,
+          -31.99765396118164,
+          454.9930114746094
+        ],
+        "std_center": [
+          0.4629100263118744,
+          0.14681905508041382,
+          0.7717664241790771
+        ],
+        "max_deviation": 1.1749271154403687,
+        "mean_density": 0.35401637499999994,
+        "std_density": 0.0006148913013696065,
+        "center_points": [
+          [
+            83.37069702148438,
+            -32.127140045166016,
+            454.7421875
+          ],
+          [
+            82.69998931884766,
+            -32.06230545043945,
+            455.81982421875
+          ],
+          [
+            83.24142456054688,
+            -31.769371032714844,
+            454.39996337890625
+          ],
+          [
+            82.46701049804688,
+            -32.14536666870117,
+            454.0320739746094
+          ],
+          [
+            83.7462158203125,
+            -31.88407325744629,
+            455.97100830078125
+          ]
+        ],
+        "densities": [
+          0.3542875,
+          0.354959375,
+          0.35395,
+          0.35380625,
+          0.35307875
+        ],
+        "selected_points_precision": {
+          "mean_precision": [
+            52.99901580810547,
+            6.535386562347412,
+            52.667877197265625
+          ],
+          "std_precision": [
+            37.696659088134766,
+            5.069340705871582,
+            55.441349029541016
+          ],
+          "point_count": 20
+        }
+      }
+    },
+    {
+      "test_name": "稳定性测试",
+      "success": true,
+      "execution_time": 10.257488250732422,
+      "error_message": null,
+      "data": {
+        "duration": 10,
+        "total_measurements": 6,
+        "success_rate": 0.6,
+        "stability_metrics": {
+          "valid_points_mean": 565451.5,
+          "valid_points_std": 1551.0599332929294,
+          "mean_distance_mean": 479.849609375,
+          "mean_distance_std": 0.6569799780845642
+        },
+        "measurements": [
+          {
+            "timestamp": 1.166677713394165,
+            "frame_id": "26521_ceb777c8-8aad-4f4f-bc16-8e6ede48021d",
+            "has_image": true,
+            "has_pointcloud": true,
+            "has_depth": true,
+            "point_cloud_stats": {
+              "total_points": 1600000,
+              "valid_points": 565309,
+              "valid_ratio": 0.353318125,
+              "mean_distance": 478.5391540527344,
+              "std_distance": 131.89686584472656,
+              "min_distance": 351.39337158203125,
+              "max_distance": 967.3914184570312,
+              "mean_x": 82.97737884521484,
+              "mean_y": -32.56631088256836,
+              "mean_z": 453.6323547363281,
+              "std_x": 107.88639068603516,
+              "std_y": 69.02091217041016,
+              "std_z": 127.53437805175781
+            }
+          },
+          {
+            "timestamp": 2.89106822013855,
+            "frame_id": "26522_498e1245-e32b-4cb9-bc4f-77bd8e2d23a9",
+            "has_image": true,
+            "has_pointcloud": true,
+            "has_depth": true,
+            "point_cloud_stats": {
+              "total_points": 1600000,
+              "valid_points": 567267,
+              "valid_ratio": 0.354541875,
+              "mean_distance": 480.5027770996094,
+              "std_distance": 135.2821807861328,
+              "min_distance": 351.88165283203125,
+              "max_distance": 977.28466796875,
+              "mean_x": 83.47622680664062,
+              "mean_y": -32.100528717041016,
+              "mean_z": 455.6279296875,
+              "std_x": 107.91564178466797,
+              "std_y": 69.06254577636719,
+              "std_z": 131.04678344726562
+            }
+          },
+          {
+            "timestamp": 4.589009523391724,
+            "frame_id": "26523_33d91c22-939e-47d8-8741-dcd7e572bd7c",
+            "has_image": true,
+            "has_pointcloud": true,
+            "has_depth": true,
+            "point_cloud_stats": {
+              "total_points": 1600000,
+              "valid_points": 566688,
+              "valid_ratio": 0.35418,
+              "mean_distance": 479.5286560058594,
+              "std_distance": 133.7347869873047,
+              "min_distance": 352.05499267578125,
+              "max_distance": 981.3773803710938,
+              "mean_x": 82.8539810180664,
+              "mean_y": -32.26082992553711,
+              "mean_z": 454.65301513671875,
+              "std_x": 108.18434143066406,
+              "std_y": 68.93372344970703,
+              "std_z": 129.46856689453125
+            }
+          },
+          {
+            "timestamp": 6.2890050411224365,
+            "frame_id": "26524_15b935ca-d04d-4b20-b308-cd4e0795ab1f",
+            "has_image": true,
+            "has_pointcloud": true,
+            "has_depth": true,
+            "point_cloud_stats": {
+              "total_points": 1600000,
+              "valid_points": 564382,
+              "valid_ratio": 0.35273875,
+              "mean_distance": 480.2677307128906,
+              "std_distance": 134.6782989501953,
+              "min_distance": 352.16015625,
+              "max_distance": 981.5320434570312,
+              "mean_x": 83.49835968017578,
+              "mean_y": -32.038482666015625,
+              "mean_z": 455.4204406738281,
+              "std_x": 107.81620788574219,
+              "std_y": 68.94193267822266,
+              "std_z": 130.4288330078125
+            }
+          },
+          {
+            "timestamp": 8.00371503829956,
+            "frame_id": "26525_46d63e8b-0b32-416c-9955-38ebc7e03ae5",
+            "has_image": true,
+            "has_pointcloud": true,
+            "has_depth": true,
+            "point_cloud_stats": {
+              "total_points": 1600000,
+              "valid_points": 562694,
+              "valid_ratio": 0.35168375,
+              "mean_distance": 480.20416259765625,
+              "std_distance": 134.75869750976562,
+              "min_distance": 352.0712585449219,
+              "max_distance": 969.0413208007812,
+              "mean_x": 83.50408935546875,
+              "mean_y": -32.1751823425293,
+              "mean_z": 455.31781005859375,
+              "std_x": 107.9827651977539,
+              "std_y": 68.87234497070312,
+              "std_z": 130.49790954589844
+            }
+          },
+          {
+            "timestamp": 9.704747438430786,
+            "frame_id": "26526_1c8cf479-8e8f-4cc0-bbd5-0dbd04ccf795",
+            "has_image": true,
+            "has_pointcloud": true,
+            "has_depth": true,
+            "point_cloud_stats": {
+              "total_points": 1600000,
+              "valid_points": 566369,
+              "valid_ratio": 0.353980625,
+              "mean_distance": 480.0552062988281,
+              "std_distance": 134.22097778320312,
+              "min_distance": 351.7047424316406,
+              "max_distance": 972.8223876953125,
+              "mean_x": 83.16679382324219,
+              "mean_y": -31.875667572021484,
+              "mean_z": 455.1292419433594,
+              "std_x": 108.34432983398438,
+              "std_y": 69.07613372802734,
+              "std_z": 129.93443298339844
+            }
+          }
+        ]
+      }
+    },
+    {
+      "test_name": "噪声测试",
+      "success": true,
+      "execution_time": 8.314623832702637,
+      "error_message": null,
+      "data": {
+        "test_count": 5,
+        "success_count": 5,
+        "success_rate": 1.0,
+        "noise_mean": 12.757060050964355,
+        "noise_std": 53.549766540527344,
+        "noise_max": 466.05072021484375,
+        "mean_depth_shape": [
+          1000,
+          1600
+        ],
+        "valid_pixels_ratio": 1.0
+      }
+    },
+    {
+      "test_name": "精度测试",
+      "success": true,
+      "execution_time": 8.454975605010986,
+      "error_message": null,
+      "data": {
+        "test_count": 5,
+        "measurement_count": 5,
+        "measurements": [
+          [
+            84.16542053222656,
+            -32.820045471191406,
+            458.0130920410156
+          ],
+          [
+            83.26222229003906,
+            -31.72077751159668,
+            454.03564453125
+          ],
+          [
+            82.42471313476562,
+            -32.5661735534668,
+            454.1850891113281
+          ],
+          [
+            83.32695770263672,
+            -32.21933364868164,
+            455.82000732421875
+          ],
+          [
+            83.60057067871094,
+            -32.01066207885742,
+            453.94964599609375
+          ]
+        ],
+        "mean_measurement": [
+          83.3559799194336,
+          -32.267398834228516,
+          455.20068359375
+        ],
+        "std_measurement": [
+          0.5642533302307129,
+          0.3903084695339203,
+          1.5650588274002075
+        ],
+        "selected_points_accuracy": {
+          "mean_accuracy": [
+            59.311279296875,
+            7.001883506774902,
+            54.85045623779297
+          ],
+          "std_accuracy": [
+            47.524681091308594,
+            5.263794898986816,
+            56.29111099243164
+          ],
+          "point_count": 20
+        },
+        "note": "需要标准目标进行更精确的精度测试"
+      }
+    }
+  ]
+}
